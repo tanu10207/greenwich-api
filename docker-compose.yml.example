@@ -1,0 +1,70 @@
+version: '3.7'
+
+services:
+  php:
+    container_name: php-fpm
+    build:
+      context: ./code
+      network: host
+    volumes:
+      *** api
+      - ./code:/var/www/html
+      - ./.docker/site.conf:/etc/nginx/conf.d/default.conf
+      
+      - ../../../Local_projects\source\jx-version-management:/var/www/html
+      - ../../../Local_projects\source\jx-version-management/.docker/site.conf:/etc/nginx/conf.d/default.conf
+
+      - ../../../../../Study\Greenwich\Top-up-course\Enterprise-Web-Software-Development\Exercises\source-code\greenwich-api:/var/www/html
+      - ../../../../../Study\Greenwich\Top-up-course\Enterprise-Web-Software-Development\Exercises\source-code\greenwich-api/.docker/site.conf:/etc/nginx/conf.d/default.conf
+    
+    networks:
+      - uranus_api
+
+  db:
+    container_name: postgre
+    build:
+      context: ./.docker/data
+      network: host
+    environment:
+      POSTGRES_USER: uranus_user
+      POSTGRES_PASSWORD: 
+      POSTGRES_DB: uranus
+    volumes:
+      - ./.docker/postgre:/var/lib/postgresql
+    ports:
+      - 35432:5432
+    networks:
+      uranus_api:
+        ipv4_address: 110.10.0.11
+
+  nginx:
+    container_name: nginx
+    depends_on:
+      - php
+      - db
+    image: nginx:alpine
+    volumes:
+      - ./code:/var/www/html
+      - ./.docker/site.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 8080:80
+    networks:
+      uranus_api:
+        ipv4_address: 110.10.0.10
+
+  redis:
+    container_name: redis
+    image: redis
+    volumes:
+      - ./redis-data:/data
+    networks:
+      uranus_api:
+        ipv4_address: 110.10.0.12
+
+networks:
+  uranus_api:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 110.10.0.0/24

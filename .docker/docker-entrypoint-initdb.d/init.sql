@@ -1,0 +1,8 @@
+CREATE DATABASE IF NOT EXISTS uranus
+DEFAULT CHARACTER SET = 'utf8' DEFAULT COLLATE 'utf8_general_ci';
+
+CREATE USER 'uranus_user'@'%' IDENTIFIED BY '4HPBcrk&[=';
+
+GRANT ALL PRIVILEGES ON uranus.* TO 'uranus_user'@'%';
+
+FLUSH PRIVILEGES;
