@@ -19,24 +19,18 @@ services:
     tty: true
     ports:
       - 80:80
-    networks:
-      uranus_api:
-        ipv4_address: 110.10.0.10
   db:
-    container_name: postgre
+    container_name: postgre-greenwich
     image: kartoza/postgis:11.0-2.5
     environment:
       - POSTGRES_USER=master
       - POSTGRES_PASS=master
-      - POSTGRES_DBNAME=uranus
+      - POSTGRES_DBNAME=greenwich
       - ALLOW_IP_RANGE=0.0.0.0/0
     volumes:
       - ./.docker/postgre:/var/lib/postgresql/data
     ports:
-      - 35432:5432
-    networks:
-      uranus_api:
-        ipv4_address: 110.10.0.11
+      - 45432:5432
   adminer:
     image: adminer
     restart: always
@@ -44,23 +38,10 @@ services:
       - 8080:8080
     links:
       - db:db
-    networks:
-      uranus_api:
-        ipv4_address: 110.10.0.13
   redis:
-    container_name: redis
+    container_name: redis-greenwich
     image: redis
     volumes:
       - ./redis-data:/data
     ports:
-      - "127.0.0.1:6321:6379"
-    networks:
-      uranus_api:
-        ipv4_address: 110.10.0.12
-networks:
-  uranus_api:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 110.10.0.0/24
+      - 6321:6379
